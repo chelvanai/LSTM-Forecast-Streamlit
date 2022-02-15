@@ -23,7 +23,7 @@ def sliding_windows(data, seq_length):
     return np.array(x), np.array(y)
 
 
-def train(training_data):
+def train(training_data, max_len):
     seq_length = 12
     x, y = sliding_windows(training_data, seq_length)
 
@@ -41,7 +41,7 @@ def train(training_data):
 
     best_valid_loss = 2
 
-    lstm = LSTM(input_size, hidden_size, num_classes, num_layers)
+    lstm = LSTM(input_size, hidden_size, num_classes, num_layers, max_len)
 
     criterion = torch.nn.MSELoss()  # mean-squared error for regression
     optimizer = torch.optim.Adam(lstm.parameters(), lr=learning_rate)
@@ -62,7 +62,7 @@ def train(training_data):
                 val_loss = criterion(val, testY).item()
                 if val_loss < best_valid_loss:
                     best_valid_loss = val_loss
-                    print("Weight saved! ",val_loss)
+                    print("Weight saved! ", val_loss)
                     torch.save(lstm.state_dict(), './weight/weight.pth')
 
 
@@ -74,4 +74,4 @@ if __name__ == '__main__':
     sc = MinMaxScaler()
     training_data = sc.fit_transform(training_set)
 
-    train(training_data)
+    train(training_data, len(training_set))
